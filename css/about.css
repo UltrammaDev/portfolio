@@ -164,14 +164,48 @@
   font-size:13px;
   color:var(--txt-dim);
 }
+/* Три уникальных подарка — равные колонки. Телеграм показывает их
+   плиткой, поэтому и здесь плитка, а не одна большая карточка. */
 .tg-gifts-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(88px,1fr));
-  gap:10px;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
 }
 
-/* ——— подарок ——— */
+/* ——— картинка подарка ———
+   Внутри лежит статичный .webp. Когда Lottie отрисует первый кадр,
+   скрипт ставит .is-live — картинка уходит, остаётся живая анимация.
+   Если скрипт или CDN не сработали, картинка остаётся: контент цел. */
+.gift-art{
+  position:relative;
+  flex:1 1 auto;
+  min-height:0;
+  width:100%;
+  display:grid;
+  place-items:center;
+}
+.gift-art img{
+  width:78%;
+  height:auto;
+  object-fit:contain;
+  filter:drop-shadow(0 6px 14px rgba(0,0,0,.55));
+  transition:opacity .25s ease;
+}
+.gift-art svg{
+  width:78%;
+  height:auto;
+  display:block;
+  filter:drop-shadow(0 6px 14px rgba(0,0,0,.55));
+}
+/* анимация готова — статичная картинка больше не нужна */
+.gift-art.is-live img{
+  opacity:0;
+  position:absolute;
+  pointer-events:none;
+}
+
 .gift{
+  position:relative;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -181,27 +215,54 @@
   padding:12px 8px 9px;
   border-radius:14px;
   border:1px solid var(--stroke);
-  background:var(--gift-common);
+  background:
+    radial-gradient(130% 120% at 50% 0%,var(--g-center,#2a2a32),transparent 70%),
+    linear-gradient(160deg,var(--g-center,#2a2a32),var(--g-edge,#15151b));
   transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
 }
-.gift img{
-  flex:1 1 auto;
-  min-height:0;
-  width:78%;
-  height:auto;
-  object-fit:contain;
-  filter:drop-shadow(0 6px 14px rgba(0,0,0,.5));
+/* блик сверху — стекло самого подарка в ТГ */
+.gift::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  background:linear-gradient(180deg,rgba(255,255,255,.10),transparent 45%);
+  pointer-events:none;
+}
+.gift-meta{
+  flex:none;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:1px;
+  width:100%;
+  max-width:100%;
 }
 .gift-name{
-  flex:none;
-  max-width:100%;
-  font-size:11.5px;
-  line-height:1.25;
-  color:var(--txt-dim);
+  font-size:12px;
+  font-weight:600;
+  line-height:1.2;
+  color:#fff;
   text-align:center;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  max-width:100%;
+}
+.gift-num{
+  font-size:10.5px;
+  color:rgba(255,255,255,.72);
+  font-variant-numeric:tabular-nums;
+}
+.gift-attrs{
+  font-size:10px;
+  line-height:1.25;
+  color:rgba(255,255,255,.58);
+  text-align:center;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:100%;
 }
 .gift:hover{
   transform:translateY(-3px);
@@ -209,26 +270,28 @@
   box-shadow:0 12px 26px rgba(0,0,0,.55);
 }
 
-/* ——— редкость: фон берём из токенов ——— */
-.gift-common{background:var(--gift-common)}
-.gift-uncommon{background:var(--gift-uncommon)}
-.gift-rare{background:var(--gift-rare)}
-.gift-epic{background:var(--gift-epic)}
-.gift-legendary{
-  background:var(--gift-legendary);
-  border-color:var(--stroke-hi);
+/* ——— редкость: тонкая кайма поверх фона подарка ———
+   Фон приходит из --g-center/--g-edge (см. .gift), а рамка задаёт
+   ступень: чем реже — тем заметнее. */
+.gift-common{--g-ring:rgba(255,255,255,.16)}
+.gift-uncommon{--g-ring:rgba(110,231,208,.45)}
+.gift-rare{--g-ring:rgba(124,156,255,.50)}
+.gift-epic{--g-ring:rgba(192,132,252,.55)}
+.gift-legendary{--g-ring:rgba(255,196,110,.60)}
+.gift{
+  border-color:var(--g-ring,var(--stroke));
+  box-shadow:0 0 0 1px var(--g-ring,rgba(255,255,255,.06)) inset;
 }
 
-/* ——— крупный подарок: 2×2 клетки ——— */
-.gift-lg{
-  grid-column:span 2;
-  grid-row:span 2;
-  border-radius:16px;
-}
-.gift-lg img{width:64%}
-.gift-lg .gift-name{font-size:12.5px}
+/* ——— крупный подарок: класс оставлен на случай, когда подарок
+   показывается один — тогда картинка крупнее ——— */
+.gift-lg .gift-art img,
+.gift-lg .gift-art svg{width:72%}
+.gift-lg .gift-name{font-size:13.5px}
+.gift-lg .gift-num{font-size:11.5px}
+.gift-lg .gift-attrs{font-size:10.5px}
 
-/* ——— мобильный: мельче аватар, ниже обложка, плотнее сетка ——— */
+/* ——— мобильный: мельче аватар, ниже обложка, подарки в столбик ——— */
 @media (max-width:640px){
   .tg-cover{height:96px}
   .tg-ava{
@@ -236,15 +299,22 @@
     margin-top:-42px;
   }
   .tg-name{font-size:1.45rem}
-  .tg-gifts-grid{
-    grid-template-columns:repeat(auto-fill,minmax(72px,1fr));
-    gap:8px;
-  }
+  /* три плитки в ряд на телефоне нечитаемы — складываем в столбик */
+  .tg-gifts-grid{grid-template-columns:1fr;gap:10px}
   .gift{
-    padding:10px 6px 8px;
+    flex-direction:row;
+    justify-content:flex-start;
+    gap:12px;
+    aspect-ratio:auto;
+    padding:10px 12px;
     border-radius:12px;
   }
-  .gift-name{font-size:11px}
+  .gift-art{width:56px;flex:none}
+  .gift-art img,
+  .gift-art svg{width:100%}
+  .gift-lg .gift-art{width:64px}
+  .gift-meta{align-items:flex-start;text-align:left}
+  .gift-name,.gift-attrs{white-space:normal;text-align:left}
 }
 
 /* ——— доступность: без движения ——— */
