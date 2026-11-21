@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Разработчик во всех направлениях</title>
+<meta name="description" content="Личное портфолио: разработка, автоматизация, инфраструктура.">
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   НАСТРОЙКИ — меняйте только этот блок
+   ============================================================ */
+:root{
+  --accent:  #7c9cff;   /* основной акцент */
+  --accent2: #6ee7d0;   /* второй акцент */
+  --bg:      #000000;   /* фон — чистый чёрный */
+  --radius:  18px;
+  --glass:   rgba(255,255,255,.035);
+  --stroke:  rgba(255,255,255,.09);
+  --stroke-hi: rgba(255,255,255,.20);
+  --txt:     #f2f4f9;
+  --txt-dim: #8d94a8;
+}
+/* ============================================================ */
+
+*,*::before,*::after{box-sizing:border-box}
+html{
+  scroll-behavior:smooth;
+  background:#000;          /* без этого при оттягивании видно белое */
+  color-scheme:dark;        /* тёмный скроллбар в Windows/Chrome */
+}
+/* тонкий тёмный скроллбар — светлый на чёрном выглядит как дыра */
+@supports (scrollbar-color:auto){
+  html{scrollbar-color:#26262e #000;scrollbar-width:thin}
+}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:#000}
+::-webkit-scrollbar-thumb{background:#242429;border:3px solid #000;border-radius:6px}
+::-webkit-scrollbar-thumb:hover{background:#33333a}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--txt);
+  font:400 16px/1.65 Inter,-apple-system,"Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  min-height:100vh;
+}
+
+/* ——— фоновые пятна ———
+   Небольшие и очень приглушённые: на чистом чёрном они лишь намечают глубину
+   по краям, а середина экрана остаётся по-настоящему чёрной. */
+.orbs{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.orb{
+  position:absolute;border-radius:50%;
+  filter:blur(110px);opacity:.20;
+  will-change:transform;
+}
+.orb.a{width:30vmax;height:30vmax;left:-10vmax;top:-12vmax;
+  background:radial-gradient(circle at 30% 30%,var(--accent),transparent 50%);
+  animation:drift1 34s ease-in-out infinite}
+.orb.b{width:24vmax;height:24vmax;right:-8vmax;top:16vmax;
+  background:radial-gradient(circle at 60% 40%,var(--accent2),transparent 50%);
+  animation:drift2 41s ease-in-out infinite}
+.orb.c{width:22vmax;height:22vmax;left:38%;bottom:-12vmax;
+  background:radial-gradient(circle at 50% 50%,#c084fc,transparent 52%);
+  animation:drift3 47s ease-in-out infinite}
+@keyframes drift1{50%{transform:translate3d(7vmax,5vmax,0) scale(1.12)}}
+@keyframes drift2{50%{transform:translate3d(-6vmax,7vmax,0) scale(1.08)}}
+@keyframes drift3{50%{transform:translate3d(4vmax,-6vmax,0) scale(1.15)}}
+
+/* ——— лёгкая зернистость, чтобы стекло читалось ——— */
+.grain{
+  position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.022;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.wrap{position:relative;z-index:2;max-width:1060px;margin:0 auto;padding:0 22px}
+
+/* ——— стеклянная панель ——— */
+.glass{
+  background:var(--glass);
+  border:1px solid var(--stroke);
+  border-radius:var(--radius);
+  backdrop-filter:blur(18px) saturate(150%);
+  -webkit-backdrop-filter:blur(18px) saturate(150%);
+  box-shadow:0 14px 40px rgba(0,0,0,.75), inset 0 1px 0 rgba(255,255,255,.05);
+}
+
+/* ——— навигация ——— */
+header{position:sticky;top:14px;z-index:20;margin:14px 0 0}
+nav{display:flex;align-items:center;gap:4px;padding:9px 10px}
+/* Марка — это имя человека, а не техническая строка. Обычный шрифт основного
+   текста, чуть плотнее и тем темнее: подпись, а не код. */
+nav .mark{
+  font-size:15.5px;font-weight:600;letter-spacing:-.01em;
+  text-decoration:none;color:var(--txt);
+  padding:8px 14px 8px 10px;margin-right:auto;
+}
+nav .mark:hover{color:var(--accent)}
+nav a{
+  color:var(--txt-dim);text-decoration:none;font-size:14.5px;
+  padding:8px 13px;border-radius:11px;transition:color .2s,background .2s;
+}
+nav a:hover{color:var(--txt);background:rgba(255,255,255,.045)}
+nav a.cta{
+  color:var(--txt);border:1px solid var(--stroke-hi);
+  background:rgba(255,255,255,.04);
+}
+nav a.cta:hover{background:rgba(255,255,255,.085)}
+
+/* ——— герой ——— */
+.hero{padding:clamp(60px,11vw,130px) 0 clamp(40px,7vw,80px);text-align:left}
+.badge{
+  display:inline-flex;align-items:center;gap:9px;
+  font-size:13.5px;color:var(--txt-dim);
+  padding:8px 15px;border-radius:999px;margin-bottom:26px;
+  background:var(--glass);border:1px solid var(--stroke);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+}
+.dot{
+  width:7px;height:7px;border-radius:50%;background:var(--accent2);
+  box-shadow:0 0 0 0 rgba(110,231,208,.6);animation:pulse 2.6s infinite;
+}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(110,231,208,.55)}
+  70%{box-shadow:0 0 0 11px rgba(110,231,208,0)}
+  100%{box-shadow:0 0 0 0 rgba(110,231,208,0)}
+}
+h1{
+  margin:0 0 20px;
+  font-size:clamp(2.3rem,7.4vw,4.6rem);
+  font-weight:600;letter-spacing:-.03em;line-height:1.04;
+}
+h1 .grad{
+  background:linear-gradient(100deg,var(--accent) 0%,var(--accent2) 55%,#c084fc 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.lede{max-width:60ch;color:var(--txt-dim);font-size:clamp(1rem,2.1vw,1.14rem);margin:0 0 34px}
+.lede b{color:var(--txt);font-weight:500}
+
+.actions{display:flex;flex-wrap:wrap;gap:12px}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:13px 22px;border-radius:13px;text-decoration:none;
+  font-size:14.5px;font-weight:500;color:var(--txt);
+  background:rgba(255,255,255,.045);border:1px solid var(--stroke);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  transition:transform .18s ease,border-color .18s,background .18s;
+}
+.btn:hover{transform:translateY(-2px);border-color:var(--stroke-hi);background:rgba(255,255,255,.065)}
+.btn.primary{
+  background:linear-gradient(100deg,rgba(124,156,255,.22),rgba(110,231,208,.18));
+  border-color:rgba(124,156,255,.45);
+}
+.btn svg{width:17px;height:17px;flex:none;opacity:.85}
+
+/* ——— секции ——— */
+section{padding:clamp(44px,7vw,76px) 0}
+h2{margin:0 0 10px;font-size:clamp(1.5rem,3.4vw,2rem);font-weight:600;letter-spacing:-.02em}
+.sub{color:var(--txt-dim);margin:0 0 34px;max-width:56ch;font-size:15px}
+
+/* ——— сетки ——— */
+.grid{display:grid;gap:16px}
+.g3{grid-template-columns:repeat(auto-fit,minmax(258px,1fr))}
+
+.card{padding:24px;transition:transform .2s ease,border-color .2s}
+.card:hover{transform:translateY(-3px);border-color:var(--stroke-hi)}
+/* Карточки одновременно .reveal, а html.js .reveal.on{transform:none}
+   (специфичность выше) гасил подъём при наведении. Возвращаем его
+   на том же уровне специфичности — только для наведённого и уже показанного. */
+html.js .card.reveal.on:hover{transform:translateY(-3px)}
+.card .ico{
+  width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
+  margin-bottom:16px;background:rgba(124,156,255,.13);
+  border:1px solid rgba(124,156,255,.26);color:var(--accent);
+}
+.card .ico svg{width:19px;height:19px}
+.card h3{margin:0 0 8px;font-size:16.5px;font-weight:600}
+.card p{margin:0;color:var(--txt-dim);font-size:14.5px}
+
+/* ——— стек-теги ——— */
+.tags{display:flex;flex-wrap:wrap;gap:9px;margin:0;padding:0;list-style:none}
+.tags li{
+  font-size:13.5px;color:var(--txt-dim);
+  padding:9px 14px;border-radius:11px;
+  background:rgba(255,255,255,.032);border:1px solid var(--stroke);
+  transition:color .18s,border-color .18s,background .18s;
+}
+.tags li:hover{color:var(--txt);border-color:var(--stroke-hi);background:rgba(255,255,255,.065)}
+
+/* ——— контакт ——— */
+.contact{padding:clamp(30px,5vw,46px);text-align:center}
+.contact h2{margin-bottom:12px}
+.contact .actions{justify-content:center;margin-top:26px}
+
+/* ——— футер ——— */
+footer{
+  padding:40px 0 54px;text-align:center;
+  color:var(--txt-dim);font-size:13.5px;
+  border-top:1px solid rgba(255,255,255,.055);margin-top:30px;
+}
+
+/* ——— появление при скролле ———
+   Скрываем ТОЛЬКО когда html.js — класс ставит скрипт в самом начале.
+   Так без JS (или если скрипт отрезал блокировщик) контент видим сразу,
+   а не остаётся навсегда прозрачным. */
+html.js .reveal{opacity:0;transform:translateY(18px);
+  transition:opacity .7s ease,transform .7s ease}
+html.js .reveal.on{opacity:1;transform:none}
+
+/* ——— печать: убираем всё, что зависит от фона ——— */
+@media print{
+  .orbs,.grain{display:none}
+  body{background:#fff;color:#000}
+  html.js .reveal{opacity:1;transform:none}
+  h1 .grad{color:#000;-webkit-text-fill-color:#000;background:none}
+  .glass{background:#fff;border-color:#ccc;box-shadow:none;backdrop-filter:none}
+}
+
+/* ——— доступность ——— */
+a:focus-visible{
+  outline:2px solid var(--accent);outline-offset:3px;border-radius:11px;
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto}
+  html.js .reveal{opacity:1;transform:none}
+}
+@media (max-width:640px){
+  /* имя не прячем — оно тут важнее ссылок; ссылки жмутся, имя остаётся */
+  nav .mark{font-size:14.5px;padding:8px 8px 8px 6px}
+  nav a{padding:8px 9px;font-size:13.5px}
+  nav{gap:1px;padding:8px}
+  header{top:8px}
+}
+
+/* ——— якоря: чтобы секции не уезжали под липкую шапку ——— */
+html{scroll-padding-top:92px}
+
+/* ——— слабые устройства: гасим дорогое ———
+   Анимированные blur(90px)-орбы под backdrop-filter заставляют браузер
+   пересчитывать размытие фона каждый кадр для каждой стеклянной панели.
+   На телефоне это греет батарею и роняет кадры. Останавливаем движение
+   и уменьшаем радиус — вид сохраняется, цена уходит. */
+@media (max-width:760px),(pointer:coarse){
+  .orb{animation:none;filter:blur(60px);opacity:.42}
+}
+</style>
+</head>
+<body>
+
+<div class="orbs" aria-hidden="true">
+  <div class="orb a"></div><div class="orb b"></div><div class="orb c"></div>
+</div>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="wrap">
+
+  <header>
+    <nav class="glass">
+      <a class="mark" href="#">Ultramma</a>
+      <a href="#skills">Навыки</a>
+      <a href="#work">Работы</a>
+      <a href="#contact" class="cta">Связаться</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <span class="badge"><span class="dot"></span>открыт к проектам</span>
+      <h1>Разработчик<br><span class="grad">во всех направлениях</span></h1>
+      <p class="lede">
+        Пишу ботов, сервисы и автоматизацию. Python и JavaScript, панель управления —
+        своя, инфраструктура — своя. Люблю задачи, где нужно разобраться в чужой
+        системе, найти узкое место и <b>сделать так, чтобы оно перестало быть узким</b>.
+      </p>
+      <div class="actions">
+        <a class="btn primary" href="https://github.com/UltrammaDev" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.9 1.2 1.9 1.2 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2a4.6 4.6 0 0 1 1.2 3.2c0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>
+          GitHub
+        </a>
+        <a class="btn" href="https://t.me/ultrammadev" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.9 3.6 20.3 21c-.3 1.2-1 1.5-2 .9l-5.5-4-2.7 2.5c-.3.3-.5.5-1 .5l.4-5.6L19.8 6c.4-.4-.1-.6-.7-.2L6.9 13.3 1.5 11.6c-1.2-.4-1.2-1.2.2-1.8L22.2 2c1-.4 1.9.2 1.7 1.6"/></svg>
+          Telegram
+        </a>
+      </div>
+    </section>
+
+    <section id="skills">
+      <h2 class="reveal">Чем работаю</h2>
+      <p class="sub reveal">Боты, сервисы и автоматизация — от идеи до работающего кода.</p>
+      <ul class="tags reveal" role="list">
+        <li>Python</li><li>JavaScript</li><li>Node.js</li><li>discord.js</li>
+        <li>Telegram Bot API</li><li>REST API</li><li>HTML</li><li>CSS</li>
+        <li>Linux</li><li>Git</li><li>Автоматизация</li><li>LLM-агенты</li>
+      </ul>
+    </section>
+
+    <section id="work">
+      <h2 class="reveal">Что делал</h2>
+      <p class="sub reveal">Немного из того, что собрано руками — от инфраструктуры до ботов. Остальное на <a href="https://github.com/UltrammaDev" target="_blank" rel="noopener" style="color:var(--accent)">GitHub</a>.</p>
+      <div class="grid g3">
+
+        <article class="card glass reveal">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M5 8h14M5 16h14"/></svg></div>
+          <h3>Шим и LLM-агенты</h3>
+          <p>Локальный прокси между клиентом и языковой моделью, плюс конвейер из десяти агентов на бесплатных провайдерах: читают код, сжимают модули, ищут баги. Здесь же — счётчики токенов и логи расхода.</p>
+        </article>
+
+        <article class="card glass reveal">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="12" rx="3"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/></svg></div>
+          <h3>Telegram-боты</h3>
+          <p>Приём фото и сообщений, диалог с памятью, очередь задач. Отдельный демон читает личную переписку и отдаёт её только по запросу — без фоновых расходов.</p>
+        </article>
+
+        <article class="card glass reveal">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 6-6 6 6 6M16 6l6 6-6 6"/></svg></div>
+          <h3>Discord-боты</h3>
+          <p>Музыкальные и модерационные боты на discord.js, начиная с 2021 года. Часть — учебные проекты по видео-курсам, часть написана для реальных серверов.</p>
+        </article>
+
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="contact glass reveal">
+        <h2>Открыт к предложениям</h2>
+        <p class="sub" style="margin:0 auto 0;max-width:44ch">Быстрее всего — Telegram. По работе и сотрудничеству пишите туда.</p>
+        <div class="actions">
+          <a class="btn primary" href="https://t.me/ultrammadev" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.9 3.6 20.3 21c-.3 1.2-1 1.5-2 .9l-5.5-4-2.7 2.5c-.3.3-.5.5-1 .5l.4-5.6L19.8 6c.4-.4-.1-.6-.7-.2L6.9 13.3 1.5 11.6c-1.2-.4-1.2-1.2.2-1.8L22.2 2c1-.4 1.9.2 1.7 1.6"/></svg>
+            Написать в Telegram
+          </a>
+          <a class="btn" href="https://github.com/UltrammaDev" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.9 1.2 1.9 1.2 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2a4.6 4.6 0 0 1 1.2 3.2c0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>
+            Профиль на GitHub
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© <span id="yr">2026</span> — собрано вручную, без конструкторов.</p>
+  </footer>
+
+</div>
+
+<script>
+  // Класс js — до всего остального: от него зависит, скрывать ли .reveal.
+  document.documentElement.classList.add('js');
+
+  // год
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  // мягкое появление блоков при скролле.
+  // Если IntersectionObserver нет (старый Safari), просто показываем всё.
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); }
+      });
+    }, {rootMargin:'0px 0px -8% 0px', threshold:.08});
+    document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  } else {
+    document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('on'); });
+  }
+</script>
+</body>
+</html>
