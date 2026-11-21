@@ -1,18 +1,29 @@
-﻿# publish-portfolio.ps1 — публикация портфолио на GitHub Pages.
+﻿# publish-portfolio.ps1 — заливка портфолио на GitHub Pages.
 #
-# Зачем скрипт: токен живёт в gh-token.txt и НЕ попадает ни в командную строку,
-# ни в историю консоли, ни в .git/config. Скрипт читает его оттуда и подставляет
-# в URL только на время push, после чего возвращает чистый URL.
+# Что делает: коммитит оба репозитория, пушит их в GitHub и включает Pages.
+# Чего НЕ делает: не создаёт репозитории. Их нужно создать один раз руками —
+# узкий токен (fine-grained) не имеет права создавать репозитории, это отдельное
+# разрешение уровня аккаунта.
 #
-# Как пользоваться:
-#   1) создать узкий токен: https://github.com/settings/personal-access-tokens/new
-#        Repository access : Only select repositories -> UltrammaDev, portfolio
-#        Permissions       : Contents (Read and write), Pages (Read and write)
-#        Expiration        : 7 days
-#   2) положить токен одной строкой в E:\portfolio\gh-token.txt
-#   3) запустить:  powershell -ExecutionPolicy Bypass -File E:\portfolio\publish-portfolio.ps1
+# ---------- Разовая подготовка (один раз, 2 минуты) ----------
 #
-# Если файла gh-token.txt нет — скрипт только покажет, что осталось сделать.
+# 1) Создать два ПУБЛИЧНЫХ репозитория (галочку «Add a README» НЕ ставить):
+#       https://github.com/new   ->  имя: UltrammaDev
+#       https://github.com/new   ->  имя: portfolio
+#
+# 2) Создать узкий токен: https://github.com/settings/personal-access-tokens/new
+#       Repository access : Only select repositories -> UltrammaDev, portfolio
+#       Permissions       :
+#           Contents : Read and write
+#           Pages    : Read and write
+#       Expiration        : 7 days
+#
+# 3) Положить токен одной строкой в E:\portfolio\gh-token.txt
+#
+# 4) Запустить:
+#       powershell -ExecutionPolicy Bypass -File E:\portfolio\publish-portfolio.ps1
+#
+# Без gh-token.txt скрипт просто покажет состояние и подсказки.
 
 $ErrorActionPreference = "Stop"
 $gh      = "UltrammaDev"
@@ -24,8 +35,8 @@ function Ok($m){   Write-Host $m -ForegroundColor Green }
 function Warn($m){ Write-Host $m -ForegroundColor Yellow }
 function Head($m){ Write-Host $m -ForegroundColor Cyan }
 
-# HTTP-запрос с разбором кода ответа. В PowerShell 5.1 исключение при 4xx/5xx —
-# это норма, поэтому код достаём из Exception.Response.
+# HTTP-запрос с разбором кода ответа. В PowerShell 5.1 исключение на 4xx/5xx —
+# норма, поэтому код достаём из Exception.Response.
 function Api {
     param([string]$Method, [string]$Url, [hashtable]$Headers, [string]$Body)
     try {
@@ -47,7 +58,7 @@ Write-Host ""
 Write-Host "=== Публикация портфолио ===" -ForegroundColor Cyan
 Write-Host ""
 
-# ---------- 1. проверяем инструменты ----------
+# ---------- 1. инструменты ----------
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     Write-Host "Git не найден в PATH." -ForegroundColor Red
     Info  "Установите:  winget install Git.Git"
@@ -61,23 +72,18 @@ if (Test-Path $keyFile) {
 $haveToken = ($token -ne "")
 
 # ---------- 2. функции ----------
-function New-Repo {
-    param([string]$Name, [string]$Token)
-    $h = @{ Authorization = "Bearer $Token"; "User-Agent" = "portfolio-publish"; "Accept" = "application/vnd.github+json" }
-    $body = (@{ name = $Name; private = $false } | ConvertTo-Json)
-    $r = Api -Method Post -Url "https://api.github.com/user/repos" -Headers $h -Body $body
-    if ($r.code -eq 201) { return "created" }
-    if ($r.code -eq 422) { return "exists" }     # имя занято
-    return "failed($($r.code))"
-}
-
 function Enable-Pages {
     param([string]$Name, [string]$Token)
     $h = @{ Authorization = "Bearer $Token"; "User-Agent" = "portfolio-publish"; "Accept" = "application/vnd.github+json" }
     $body = (@{ source = @{ branch = "main"; path = "/" } } | ConvertTo-Json -Depth 5)
+    # сначала пробуем создать, при 409 — обновить существующий
     $r = Api -Method Post -Url "https://api.github.com/repos/$gh/$Name/pages" -Headers $h -Body $body
     if ($r.code -eq 201) { return "created" }
-    if ($r.code -eq 409) { return "already" }    # уже включён
+    if ($r.code -eq 409) {
+        $u = Api -Method Put -Url "https://api.github.com/repos/$gh/$Name/pages" -Headers $h -Body $body
+        if ($u.code -eq 204) { return "updated" }
+        return "already"
+    }
     return "failed($($r.code))"
 }
 
@@ -89,7 +95,7 @@ function Push-Dir {
 
     Push-Location $Dir
     try {
-        # remote ставим с токеном только на время push
+        # remote с токеном — только на время push
         git remote remove origin 2>$null | Out-Null
         git remote add origin $authUrl
         git branch -M main 2>$null | Out-Null
@@ -99,12 +105,13 @@ function Push-Dir {
         git -c user.name="UltrammaDev" -c user.email="UltrammaDev@users.noreply.github.com" `
             commit -m "Обновление" 2>$null | Out-Null
 
-        $out = (& git push -u origin main --force 2>&1 | Out-String)
+        $out  = (& git push -u origin main --force 2>&1 | Out-String)
+        $code = $LASTEXITCODE
 
         # ВАЖНО: сразу затираем URL — токен не должен остаться в .git/config
         git remote set-url origin $cleanUrl
 
-        if ($out -match "main -> main" -or $out -match "up-to-date" -or $LASTEXITCODE -eq 0) {
+        if ($code -eq 0 -or $out -match "main -> main" -or $out -match "up-to-date") {
             return $true
         }
         Write-Host $out -ForegroundColor DarkGray
@@ -114,50 +121,41 @@ function Push-Dir {
     }
 }
 
-# ---------- 3. что публикуем ----------
-Head "Состав репозиториев:"
+# ---------- 3. состояние ----------
+Head "Куда заливаем:"
 Info "  E:\UltrammaDev  ->  github.com/$gh/UltrammaDev   (README профиля)"
 Info "  E:\portfolio    ->  github.com/$gh/portfolio     (index.html на Pages)"
 Write-Host ""
 
 if (-not $haveToken) {
-    Warn "Токена нет — публикация не выполнена."
+    Warn "Токена нет — заливка не выполнена."
     Write-Host ""
-    Info "Создайте узкий токен: https://github.com/settings/personal-access-tokens/new"
-    Info "  Repository access : Only select repositories -> UltrammaDev, portfolio"
-    Info "  Permissions       : Contents (Read and write), Pages (Read and write)"
-    Info "  Expiration        : 7 days"
-    Info "Положите его одной строкой в $keyFile и запустите скрипт снова."
+    Head "Что сделать:"
+    Info "  1) создать репозитории (если ещё нет): https://github.com/new"
+    Info "       UltrammaDev  и  portfolio   — публичные, БЕЗ README"
+    Info "  2) токен: https://github.com/settings/personal-access-tokens/new"
+    Info "       Repository access : Only select repositories -> UltrammaDev, portfolio"
+    Info "       Permissions       : Contents (Read and write), Pages (Read and write)"
+    Info "       Expiration        : 7 days"
+    Info "  3) положить токен одной строкой в $keyFile"
     exit 0
 }
 
-# ---------- 4. создаём репозитории ----------
-Head "Создаю репозитории..."
-$r1 = New-Repo -Name "UltrammaDev" -Token $token
-if ($r1 -eq "created") { Ok "  UltrammaDev — создан" }
-elseif ($r1 -eq "exists") { Info "  UltrammaDev — уже есть, обновлю" }
-else { Warn "  UltrammaDev — ошибка $r1" }
-
-$r2 = New-Repo -Name "portfolio" -Token $token
-if ($r2 -eq "created") { Ok "  portfolio — создан" }
-elseif ($r2 -eq "exists") { Info "  portfolio — уже есть, обновлю" }
-else { Warn "  portfolio — ошибка $r2" }
-Write-Host ""
-
-# ---------- 5. заливаем ----------
-Head "Заливаю файлы..."
+# ---------- 4. заливаем ----------
+Head "Заливаю..."
 $p1 = Push-Dir -Dir "E:\UltrammaDev" -Name "UltrammaDev" -Token $token
 if ($p1) { Ok "  README -> UltrammaDev" } else { Warn "  README -> ошибка push" }
 
 $p2 = Push-Dir -Dir "E:\portfolio" -Name "portfolio" -Token $token
 if ($p2) { Ok "  сайт   -> portfolio" } else { Warn "  сайт   -> ошибка push" }
 
-# ---------- 6. включаем Pages ----------
+# ---------- 5. Pages ----------
 Write-Host ""
 Head "Включаю GitHub Pages..."
 $st = Enable-Pages -Name "portfolio" -Token $token
 switch ($st) {
     "created" { Ok "  Pages включён: ветка main, корень" }
+    "updated" { Ok "  Pages настроен: ветка main, корень" }
     "already" { Ok "  Pages уже включён" }
     default   { Warn "  Pages: $st — включите вручную: Settings -> Pages -> main / root" }
 }
