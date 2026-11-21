@@ -90,31 +90,37 @@ function Enable-Pages {
 function Push-Dir {
     param([string]$Dir, [string]$Name, [string]$Token)
 
+    # ВНИМАНИЕ (грабли PowerShell 5.1): вывод git в stderr при
+    # $ErrorActionPreference = "Stop" превращается в фатальную NativeCommandError.
+    # Поэтому внутри функции глушим проверку ошибок у нативных команд.
+    $ErrorActionPreference = "Continue"
+
     $authUrl  = "https://UltrammaDev:$Token@github.com/$gh/$Name.git"
     $cleanUrl = "https://github.com/$gh/$Name.git"
 
     Push-Location $Dir
     try {
         # remote с токеном — только на время push
-        git remote remove origin 2>$null | Out-Null
-        git remote add origin $authUrl
-        git branch -M main 2>$null | Out-Null
-        git add -A
+        git remote remove origin 2>&1 | Out-Null
+        git remote add origin $authUrl  2>&1 | Out-Null
+        git branch -M main 2>&1 | Out-Null
+        git add -A  2>&1 | Out-Null
 
         # коммит, только если есть что коммитить
         git -c user.name="UltrammaDev" -c user.email="UltrammaDev@users.noreply.github.com" `
-            commit -m "Обновление" 2>$null | Out-Null
+            commit -m "Обновление" 2>&1 | Out-Null
 
         $out  = (& git push -u origin main --force 2>&1 | Out-String)
         $code = $LASTEXITCODE
 
         # ВАЖНО: сразу затираем URL — токен не должен остаться в .git/config
-        git remote set-url origin $cleanUrl
+        git remote set-url origin $cleanUrl  2>&1 | Out-Null
 
         if ($code -eq 0 -or $out -match "main -> main" -or $out -match "up-to-date") {
             return $true
         }
-        Write-Host $out -ForegroundColor DarkGray
+        # прячем токен, если он попал в текст ошибки
+        Write-Host ($out -replace [regex]::Escape($Token), "***") -ForegroundColor DarkGray
         return $false
     } finally {
         Pop-Location
