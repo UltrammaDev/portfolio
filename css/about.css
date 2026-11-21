@@ -169,8 +169,8 @@
    а внутри квадрата не помещался текст. */
 .tg-gifts-grid{
   display:grid;
-  grid-template-columns:repeat(3,132px);
-  justify-content:start;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  max-width:396px;
   gap:10px;
 }
 
@@ -180,8 +180,9 @@
    живая анимация. Если скрипт или CDN не сработали, картинка остаётся. */
 .gift-art{
   position:relative;
-  width:100%;
-  aspect-ratio:1;          /* квадрат только у картинки, не у всей плитки */
+  width:min(100%,84px);
+  margin-inline:auto;
+  aspect-ratio:1;
   display:grid;
   place-items:center;
 }
@@ -226,6 +227,7 @@
 }
 .gift-meta{
   flex:none;
+  min-width:0;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -239,10 +241,11 @@
   line-height:1.2;
   color:#fff;
   text-align:center;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
   max-width:100%;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
 }
 .gift-num{
   font-size:10.5px;
@@ -278,12 +281,6 @@
   box-shadow:0 0 0 1px var(--g-ring,rgba(255,255,255,.06)) inset;
 }
 
-/* ——— крупный подарок: класс оставлен на случай, когда подарок
-   показывается один — тогда плитка и картинка шире ——— */
-.gift-lg{width:132px}
-.gift-lg .gift-name{font-size:13.5px}
-.gift-lg .gift-num{font-size:11.5px}
-.gift-lg .gift-attrs{font-size:10.5px}
 
 /* ——— мобильный: мельче аватар, ниже обложка, подарки в столбик ———
    На узком экране три плитки в ряд нечитаемы, поэтому строка:
@@ -299,8 +296,7 @@
     grid-template-columns:1fr;
     gap:8px;
   }
-  .gift,
-  .gift-lg{
+  .gift{
     flex-direction:row;
     align-items:center;
     width:auto;
@@ -313,7 +309,6 @@
     flex:none;
     aspect-ratio:1;
   }
-  .gift-lg .gift-art{width:48px}
   .gift-meta{
     align-items:flex-start;
     text-align:left;
