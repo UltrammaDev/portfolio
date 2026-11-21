@@ -1,0 +1,4 @@
+gh-token.txt
+.env
+*.key
+*.pem
