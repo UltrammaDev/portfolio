@@ -164,43 +164,40 @@
   font-size:13px;
   color:var(--txt-dim);
 }
-/* Три уникальных подарка — равные колонки. Телеграм показывает их
-   плиткой, поэтому и здесь плитка, а не одна большая карточка. */
+/* Три уникальных подарка — компактные плитки в ряд, как в самом Telegram.
+   Размер задан жёстко: на всю ширину панели плитки раздувались до 310px,
+   а внутри квадрата не помещался текст. */
 .tg-gifts-grid{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px;
+  grid-template-columns:repeat(3,132px);
+  justify-content:start;
+  gap:10px;
 }
 
 /* ——— картинка подарка ———
-   Внутри лежит статичный .webp. Когда Lottie отрисует первый кадр,
-   скрипт ставит .is-live — картинка уходит, остаётся живая анимация.
-   Если скрипт или CDN не сработали, картинка остаётся: контент цел. */
+   Квадрат фиксированной высоты. Внутри лежит статичный .webp; когда Lottie
+   отрисует первый кадр, скрипт ставит .is-live — картинка уходит, остаётся
+   живая анимация. Если скрипт или CDN не сработали, картинка остаётся. */
 .gift-art{
   position:relative;
-  flex:1 1 auto;
-  min-height:0;
   width:100%;
+  aspect-ratio:1;          /* квадрат только у картинки, не у всей плитки */
   display:grid;
   place-items:center;
 }
-.gift-art img{
-  width:78%;
-  height:auto;
+.gift-art img,
+.gift-art svg{
+  width:100%;
+  height:100%;
   object-fit:contain;
   filter:drop-shadow(0 6px 14px rgba(0,0,0,.55));
-  transition:opacity .25s ease;
 }
-.gift-art svg{
-  width:78%;
-  height:auto;
-  display:block;
-  filter:drop-shadow(0 6px 14px rgba(0,0,0,.55));
-}
+.gift-art img{transition:opacity .25s ease}
 /* анимация готова — статичная картинка больше не нужна */
 .gift-art.is-live img{
   opacity:0;
   position:absolute;
+  inset:0;
   pointer-events:none;
 }
 
@@ -209,10 +206,8 @@
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:center;
-  gap:6px;
-  aspect-ratio:1;
-  padding:12px 8px 9px;
+  gap:7px;
+  padding:9px 7px 8px;
   border-radius:14px;
   border:1px solid var(--stroke);
   background:
@@ -254,14 +249,14 @@
   color:rgba(255,255,255,.72);
   font-variant-numeric:tabular-nums;
 }
+/* Подпись с моделью и паттерном длинная: в плитку 132px одной строкой
+   она не влезает и обрезалась многоточием. Разрешаем перенос на две
+   строки — вся информация остаётся видимой. */
 .gift-attrs{
   font-size:10px;
-  line-height:1.25;
+  line-height:1.35;
   color:rgba(255,255,255,.58);
   text-align:center;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
   max-width:100%;
 }
 .gift:hover{
@@ -284,14 +279,15 @@
 }
 
 /* ——— крупный подарок: класс оставлен на случай, когда подарок
-   показывается один — тогда картинка крупнее ——— */
-.gift-lg .gift-art img,
-.gift-lg .gift-art svg{width:72%}
+   показывается один — тогда плитка и картинка шире ——— */
+.gift-lg{width:132px}
 .gift-lg .gift-name{font-size:13.5px}
 .gift-lg .gift-num{font-size:11.5px}
 .gift-lg .gift-attrs{font-size:10.5px}
 
-/* ——— мобильный: мельче аватар, ниже обложка, подарки в столбик ——— */
+/* ——— мобильный: мельче аватар, ниже обложка, подарки в столбик ———
+   На узком экране три плитки в ряд нечитаемы, поэтому строка:
+   картинка слева, подписи справа. */
 @media (max-width:640px){
   .tg-cover{height:96px}
   .tg-ava{
@@ -299,22 +295,36 @@
     margin-top:-42px;
   }
   .tg-name{font-size:1.45rem}
-  /* три плитки в ряд на телефоне нечитаемы — складываем в столбик */
-  .tg-gifts-grid{grid-template-columns:1fr;gap:10px}
-  .gift{
+  .tg-gifts-grid{
+    grid-template-columns:1fr;
+    gap:8px;
+  }
+  .gift,
+  .gift-lg{
     flex-direction:row;
-    justify-content:flex-start;
+    align-items:center;
+    width:auto;
     gap:12px;
-    aspect-ratio:auto;
-    padding:10px 12px;
+    padding:8px 12px;
     border-radius:12px;
   }
-  .gift-art{width:56px;flex:none}
-  .gift-art img,
-  .gift-art svg{width:100%}
-  .gift-lg .gift-art{width:64px}
-  .gift-meta{align-items:flex-start;text-align:left}
-  .gift-name,.gift-attrs{white-space:normal;text-align:left}
+  .gift-art{
+    width:48px;
+    flex:none;
+    aspect-ratio:1;
+  }
+  .gift-lg .gift-art{width:48px}
+  .gift-meta{
+    align-items:flex-start;
+    text-align:left;
+    width:auto;
+    flex:1 1 auto;
+  }
+  .gift-name,
+  .gift-attrs{
+    white-space:normal;
+    text-align:left;
+  }
 }
 
 /* ——— доступность: без движения ——— */
