@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
 <!-- Стили подключаются по порядку: переменные -> база -> раскладка ->
-     компоненты -> раздел «Обо мне». Меняете тему — правите только tokens.css. -->
+     компоненты -> профиль. Меняете тему — правите только tokens.css. -->
 <link rel="stylesheet" href="css/tokens.css">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/layout.css">
@@ -32,28 +32,100 @@
       <a class="mark" href="#">Ultramma</a>
       <a href="#skills">Навыки</a>
       <a href="#work">Работы</a>
-      <a href="#about" class="cta">Обо мне</a>
+      <a href="#contact" class="cta">Связаться</a>
     </nav>
   </header>
 
   <main>
     <section class="hero">
-      <span class="badge"><span class="dot"></span>открыт к проектам</span>
-      <h1>Разработчик<br><span class="grad">во всех направлениях</span></h1>
-      <p class="lede">
-        Пишу ботов, сервисы и автоматизацию. Python и JavaScript, панель управления —
-        своя, инфраструктура — своя. Люблю задачи, где нужно разобраться в чужой
-        системе, найти узкое место и <b>сделать так, чтобы оно перестало быть узким</b>.
-      </p>
-      <div class="actions">
-        <a class="btn primary" href="https://github.com/UltrammaDev" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.9 1.2 1.9 1.2 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2a4.6 4.6 0 0 1 1.2 3.2c0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>
-          GitHub
-        </a>
-        <a class="btn" href="https://t.me/ultrammadev" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.9 3.6 20.3 21c-.3 1.2-1 1.5-2 .9l-5.5-4-2.7 2.5c-.3.3-.5.5-1 .5l.4-5.6L19.8 6c.4-.4-.1-.6-.7-.2L6.9 13.3 1.5 11.6c-1.2-.4-1.2-1.2.2-1.8L22.2 2c1-.4 1.9.2 1.7 1.6"/></svg>
-          Telegram
-        </a>
+      <div class="hero-text">
+        <span class="badge"><span class="dot"></span>открыт к проектам</span>
+        <h1>Разработчик<br><span class="grad">во всех направлениях</span></h1>
+        <p class="lede">
+          Пишу ботов, сервисы и автоматизацию. Python и JavaScript, панель управления —
+          своя, инфраструктура — своя. Люблю задачи, где нужно разобраться в чужой
+          системе, найти узкое место и <b>сделать так, чтобы оно перестало быть узким</b>.
+        </p>
+        <div class="actions">
+          <a class="btn primary" href="https://github.com/UltrammaDev" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.9 1.2 1.9 1.2 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2a4.6 4.6 0 0 1 1.2 3.2c0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>
+            GitHub
+          </a>
+          <a class="btn" href="https://t.me/ultrammadev" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.9 3.6 20.3 21c-.3 1.2-1 1.5-2 .9l-5.5-4-2.7 2.5c-.3.3-.5.5-1 .5l.4-5.6L19.8 6c.4-.4-.1-.6-.7-.2L6.9 13.3 1.5 11.6c-1.2-.4-1.2-1.2.2-1.8L22.2 2c1-.4 1.9.2 1.7 1.6"/></svg>
+            Telegram
+          </a>
+        </div>
+      </div>
+
+      <!-- Карточка профиля переехала в первый экран: справа от текста.
+           Это тот же .tg, что и раньше, поэтому класс reveal снят —
+           на первом экране он дал бы мигание при появлении. -->
+      <div class="hero-card">
+        <div class="tg glass">
+          <div class="tg-card">
+            <div class="tg-cover" aria-hidden="true"></div>
+
+            <div class="tg-body">
+              <div class="tg-ava">
+                <img src="assets/avatar.jpg" alt="Аватар Ultramma" width="640" height="640">
+                <span class="tg-ava-ring" aria-hidden="true"></span>
+              </div>
+
+              <div class="tg-id">
+                <span class="tg-name">Ultramma</span>
+                <a class="tg-handle" href="https://t.me/ultrammadev" target="_blank" rel="noopener">@ultrammadev</a>
+                <span class="tg-status"><span class="tg-dot"></span>в сети</span>
+              </div>
+
+              <div class="tg-meta">
+                <span class="tg-stat"><b>67</b> подарков</span>
+                <span class="tg-stat"><b>3</b> из них уникальных</span>
+                <span class="tg-stat">Telegram Stars: <b>3086</b></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tg-gifts">
+            <div class="tg-gifts-head">Уникальные подарки</div>
+            <div class="tg-gifts-grid">
+
+              <article class="gift gift-legendary" style="--g-center:#6fc793;--g-edge:#3b9c84">
+                <div class="gift-art" data-lottie="assets/gifts/nft/CandyCane-210900/model.json">
+                  <img src="assets/gifts/nft/CandyCane-210900/model.webp" alt="Candy Cane — модель Iceblink" loading="lazy" width="128" height="128">
+                </div>
+                <div class="gift-meta">
+                  <span class="gift-name">Candy Cane</span>
+                  <span class="gift-num">#210900</span>
+                  <span class="gift-attrs">Iceblink · 2.6% · Ice Skates · 2.4%</span>
+                </div>
+              </article>
+
+              <article class="gift gift-epic" style="--g-center:#537991;--g-edge:#416479">
+                <div class="gift-art" data-lottie="assets/gifts/nft/SnoopDogg-425199/model.json">
+                  <img src="assets/gifts/nft/SnoopDogg-425199/model.webp" alt="Snoop Dogg — модель Long Beach" loading="lazy" width="128" height="128">
+                </div>
+                <div class="gift-meta">
+                  <span class="gift-name">Snoop Dogg</span>
+                  <span class="gift-num">#425199</span>
+                  <span class="gift-attrs">Long Beach · 2.5% · Pyramid · 0.5%</span>
+                </div>
+              </article>
+
+              <article class="gift gift-rare" style="--g-center:#97a2ac;--g-edge:#63727c">
+                <div class="gift-art" data-lottie="assets/gifts/nft/LolPop-194277/model.json">
+                  <img src="assets/gifts/nft/LolPop-194277/model.webp" alt="Lol Pop — модель Golden Amber" loading="lazy" width="128" height="128">
+                </div>
+                <div class="gift-meta">
+                  <span class="gift-name">Lol Pop</span>
+                  <span class="gift-num">#194277</span>
+                  <span class="gift-attrs">Golden Amber · 1.0% · Telescope · 0.4%</span>
+                </div>
+              </article>
+
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -90,76 +162,6 @@
           <p>Музыкальные и модерационные боты на discord.js, начиная с 2021 года. Часть — учебные проекты по видео-курсам, часть написана для реальных серверов.</p>
         </article>
 
-      </div>
-    </section>
-
-    <section id="about">
-      <h2 class="reveal">Обо мне</h2>
-      <p class="sub reveal">То же, что и в Telegram — только здесь можно показать крупнее.</p>
-
-      <div class="tg glass reveal">
-        <div class="tg-card">
-          <div class="tg-cover" aria-hidden="true"></div>
-
-          <div class="tg-body">
-            <div class="tg-ava">
-              <img src="assets/avatar.jpg" alt="Аватар Ultramma" width="640" height="640">
-              <span class="tg-ava-ring" aria-hidden="true"></span>
-            </div>
-
-            <div class="tg-id">
-              <span class="tg-name">Ultramma</span>
-              <a class="tg-handle" href="https://t.me/ultrammadev" target="_blank" rel="noopener">@ultrammadev</a>
-              <span class="tg-status"><span class="tg-dot"></span>в сети</span>
-            </div>
-
-            <div class="tg-meta">
-              <span class="tg-stat"><b>67</b> подарков</span>
-              <span class="tg-stat"><b>3</b> из них уникальных</span>
-              <span class="tg-stat">Telegram Stars: <b>3086</b></span>
-            </div>
-          </div>
-        </div>
-
-        <div class="tg-gifts">
-          <div class="tg-gifts-head">Уникальные подарки</div>
-          <div class="tg-gifts-grid">
-
-            <article class="gift gift-legendary" style="--g-center:#6fc793;--g-edge:#3b9c84">
-              <div class="gift-art" data-lottie="assets/gifts/nft/CandyCane-210900/model.json">
-                <img src="assets/gifts/nft/CandyCane-210900/model.webp" alt="Candy Cane — модель Iceblink" loading="lazy" width="128" height="128">
-              </div>
-              <div class="gift-meta">
-                <span class="gift-name">Candy Cane</span>
-                <span class="gift-num">#210900</span>
-                <span class="gift-attrs">Iceblink · 2.6% · Ice Skates · 2.4%</span>
-              </div>
-            </article>
-
-            <article class="gift gift-epic" style="--g-center:#537991;--g-edge:#416479">
-              <div class="gift-art" data-lottie="assets/gifts/nft/SnoopDogg-425199/model.json">
-                <img src="assets/gifts/nft/SnoopDogg-425199/model.webp" alt="Snoop Dogg — модель Long Beach" loading="lazy" width="128" height="128">
-              </div>
-              <div class="gift-meta">
-                <span class="gift-name">Snoop Dogg</span>
-                <span class="gift-num">#425199</span>
-                <span class="gift-attrs">Long Beach · 2.5% · Pyramid · 0.5%</span>
-              </div>
-            </article>
-
-            <article class="gift gift-rare" style="--g-center:#97a2ac;--g-edge:#63727c">
-              <div class="gift-art" data-lottie="assets/gifts/nft/LolPop-194277/model.json">
-                <img src="assets/gifts/nft/LolPop-194277/model.webp" alt="Lol Pop — модель Golden Amber" loading="lazy" width="128" height="128">
-              </div>
-              <div class="gift-meta">
-                <span class="gift-name">Lol Pop</span>
-                <span class="gift-num">#194277</span>
-                <span class="gift-attrs">Golden Amber · 1.0% · Telescope · 0.4%</span>
-              </div>
-            </article>
-
-          </div>
-        </div>
       </div>
     </section>
 
