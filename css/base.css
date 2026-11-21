@@ -1,0 +1,94 @@
+/* ============================================================
+   БАЗА — сброс, типографика, фон, доступность.
+   ============================================================ */
+
+*,*::before,*::after{box-sizing:border-box}
+
+html{
+  scroll-behavior:smooth;
+  background:#000;          /* без этого при оттягивании видно белое */
+  color-scheme:dark;        /* тёмный скроллбар в Windows/Chrome */
+  scroll-padding-top:92px;  /* якоря не уезжают под липкую шапку */
+}
+
+/* тонкий тёмный скроллбар — светлый на чёрном выглядит как дыра */
+@supports (scrollbar-color:auto){
+  html{scrollbar-color:#26262e #000;scrollbar-width:thin}
+}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:#000}
+::-webkit-scrollbar-thumb{background:#242429;border:3px solid #000;border-radius:6px}
+::-webkit-scrollbar-thumb:hover{background:#33333a}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--txt);
+  font:400 16px/1.65 Inter,-apple-system,"Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  min-height:100vh;
+}
+
+/* ——— фоновые пятна ———
+   Небольшие и очень приглушённые: на чистом чёрном они лишь намечают глубину
+   по краям, а середина экрана остаётся по-настоящему чёрной. */
+.orbs{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.orb{
+  position:absolute;border-radius:50%;
+  filter:blur(110px);opacity:.20;
+  will-change:transform;
+}
+.orb.a{width:30vmax;height:30vmax;left:-10vmax;top:-12vmax;
+  background:radial-gradient(circle at 30% 30%,var(--accent),transparent 50%);
+  animation:drift1 34s ease-in-out infinite}
+.orb.b{width:24vmax;height:24vmax;right:-8vmax;top:16vmax;
+  background:radial-gradient(circle at 60% 40%,var(--accent2),transparent 50%);
+  animation:drift2 41s ease-in-out infinite}
+.orb.c{width:22vmax;height:22vmax;left:38%;bottom:-12vmax;
+  background:radial-gradient(circle at 50% 50%,var(--accent3),transparent 52%);
+  animation:drift3 47s ease-in-out infinite}
+@keyframes drift1{50%{transform:translate3d(7vmax,5vmax,0) scale(1.12)}}
+@keyframes drift2{50%{transform:translate3d(-6vmax,7vmax,0) scale(1.08)}}
+@keyframes drift3{50%{transform:translate3d(4vmax,-6vmax,0) scale(1.15)}}
+
+/* ——— лёгкая зернистость, чтобы стекло читалось ——— */
+.grain{
+  position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.022;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ——— появление при скролле ———
+   Скрываем ТОЛЬКО когда html.js — класс ставит скрипт в самом начале.
+   Так без JS (или если скрипт отрезал блокировщик) контент видим сразу,
+   а не остаётся навсегда прозрачным. */
+html.js .reveal{opacity:0;transform:translateY(18px);
+  transition:opacity .7s ease,transform .7s ease}
+html.js .reveal.on{opacity:1;transform:none}
+
+/* ——— печать: убираем всё, что зависит от фона ——— */
+@media print{
+  .orbs,.grain{display:none}
+  body{background:#fff;color:#000}
+  html.js .reveal{opacity:1;transform:none}
+  h1 .grad{color:#000;-webkit-text-fill-color:#000;background:none}
+  .glass{background:#fff;border-color:#ccc;box-shadow:none;backdrop-filter:none}
+}
+
+/* ——— доступность ——— */
+a:focus-visible{
+  outline:2px solid var(--accent);outline-offset:3px;border-radius:11px;
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto}
+  html.js .reveal{opacity:1;transform:none}
+}
+
+/* ——— слабые устройства: гасим дорогое ———
+   Анимированные blur(110px)-пятна под backdrop-filter заставляют браузер
+   пересчитывать размытие фона для каждой стеклянной панели каждый кадр.
+   На телефоне это греет батарею и роняет кадры. Останавливаем движение
+   и уменьшаем радиус — вид сохраняется, цена уходит. */
+@media (max-width:760px),(pointer:coarse){
+  .orb{animation:none;filter:blur(60px);opacity:.42}
+}
