@@ -1,0 +1,14 @@
+217.60.151.199.sslip.io {
+	root * /var/www/portfolio
+	file_server
+	encode gzip
+
+	header {
+		X-Content-Type-Options nosniff
+		X-Frame-Options SAMEORIGIN
+		Referrer-Policy strict-origin-when-cross-origin
+	}
+
+	@static path *.css *.js *.jpg *.png *.svg *.woff2
+	header @static Cache-Control "public, max-age=604800"
+}

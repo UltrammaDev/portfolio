@@ -2,3 +2,6 @@ gh-token.txt
 .env
 *.key
 *.pem
+
+# Сборка: собирается build-portfolio.py, в репозитории не нужна
+dist/
